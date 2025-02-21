@@ -51,8 +51,72 @@ def parse_config(filename):
 	return config
 
 def run_bash(config, current_workunit, jobline):
-	# Yet to be implemented
-	pass
+
+	# Get the template
+	try:
+		with open(config['bash_template']) as f:
+			bash_template = jinja2.Template(f.read())
+	except IOError as error:
+		print(f"Cannot open the bash_template ({config['bash_template']})")
+		raise error
+
+	jobline_str = str(jobline)
+
+	# how many jobs are there that we need to submit?
+	subjobs_count = len(current_workunit['subjobs'])
+
+	# Where are we putting this file?
+	batch_workunit_base=Path(config['sharedfs_workunit_path']) / jobline_str
+	batch_workunit_base.mkdir(parents=True, exist_ok=True)
+	batch_submit_file = batch_workunit_base / "run.bash"
+
+	template_values = {
+		"job_letter": config['job_letter'],
+		"job_name": config['job_name'],
+		"threads_to_use": config['threads_to_use'],
+		"array_start": "0",
+		"array_end": (subjobs_count - 1),
+		"workunit_id": jobline_str,
+		"job_storage_mode": config['job_storage_mode'],
+		"job_tgz": current_workunit['download_path'],
+		"batch_workunit_base": batch_workunit_base.resolve().as_posix()
+	}
+	render_output = bash_template.render(template_values)
+
+	try:
+		with open(batch_submit_file, "w") as f:
+			f.write(render_output)
+	except IOError as error:
+		print(f"Cannot write the workunit bash file ({batch_submit_file})")
+		raise error
+
+	try:
+		with open("../workflow/run.bash", "a") as bash_out:
+			bash_out.write(f"bash {batch_submit_file}\n")
+	except IOError as error:
+		print(f"Cannot write the workflow bash file")
+		raise error
+
+	cmd = [
+		"bash",
+		batch_submit_file
+	]
+
+	try:
+		ret = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	except subprocess.TimeoutExpired as err:
+		raise Exception("timeout on submission to bash")
+
+	ret.wait()
+
+	current_workunit['status'] = {
+		'vf_job_status': 'SUBMITTED',
+		'job_name': f"vflp-{config['job_letter']}-{jobline_str}",
+		'job_id': ret.pid
+	}
+
+	# Slow ourselves down a bit
+	time.sleep(0.1)
 	
 def submit_slurm(config, client, current_workunit, jobline):
 
@@ -115,6 +179,9 @@ def submit_slurm(config, client, current_workunit, jobline):
 					text=True, timeout=int(config['slurm_job_submission_timeout']))
 	except subprocess.TimeoutExpired as err:
 		raise Exception("timeout on submission to sbatch")
+
+	while ret.returncode is None:
+		time.sleep(0.1)
 
 	if ret.returncode == 0:
 		match = re.search(
@@ -241,6 +308,13 @@ def process(config, start, stop):
 
 	status = {}
 
+	submit_type = config['batchsystem']
+
+	# If this is bash, let's init a file
+	if submit_type == "bash":
+		with open("../workflow/run.bash", "w") as bash_out:
+			bash_out.write("#!/usr/bin/env bash\n")
+
 	# load the status file that is keeping track of the data
 	with open("../workflow/status.json", "r") as read_file:
 		status = json.load(read_file)
@@ -263,8 +337,6 @@ def process(config, start, stop):
 			if 'status' in current_workunit:
 				print("jobs were already submitted for this....")
 			else:
-
-				submit_type=config['batchsystem']
 				if(submit_type == "awsbatch"):
 					submit_aws_batch(config, client, current_workunit, jobline)
 				elif(submit_type == "slurm"):

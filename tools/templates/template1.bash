@@ -1,12 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Copyright (C) 2019 Christoph Gorgulla
+# Copyright (C) 2024 Christopher Secker
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # This file is part of VirtualFlow.
 #
 # VirtualFlow is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #
 # VirtualFlow is distributed in the hope that it will be useful,
@@ -17,39 +19,15 @@
 # You should have received a copy of the GNU General Public License
 # along with VirtualFlow.  If not, see <https://www.gnu.org/licenses/>.
 
-# ---------------------------------------------------------------------------
-#
-# Description: Slurm job file.
-#
-# Revision history:
-# 2022-07-21  Original version
-#
-# ---------------------------------------------------------------------------
 
-# Update the SBATCH section if needed for your particular Slurm
-# installation. If a line starts with "##" (two #s) it will be 
-# ignored
+# Job Information -- generally nothing in this
+# section should be changed
+##################################################################################
 
-#SBATCH --job-name={{job_letter}}-{{workunit_id}}
-#SBATCH --array {{array_start}}-{{array_end}}%{{slurm_array_job_throttle}}
-##SBATCH --time=00-12:00:00
-##SBATCH --mem-per-cpu=800M
-##SBATCH --nodes=1
-#SBATCH --cpus-per-task={{slurm_cpus}}
-#SBATCH --partition={{slurm_partition}}
-#SBATCH --output={{batch_workunit_base}}/%A_%a.out
-#SBATCH --error={{batch_workunit_base}}/%A_%a.err
-#SBATCH --account={{slurm_account}}
-
-
-# If you are using a virtualenv, make sure the correct one 
+# If you are using a virtualenv, make sure the correct one
 # is being activated
 
 source $HOME/vflp_env/bin/activate
-
-# Load modules (if needed, depends on cluster configuration)
-module load openbabel/3.1.1
-module load java
 
 # deletes the temp directory
 function cleanup {
@@ -59,23 +37,19 @@ function cleanup {
 
 trap cleanup EXIT
 
-
-# Job Information -- generally nothing in this
-# section should be changed
-##################################################################################
-
 export VFLP_WORKUNIT={{workunit_id}}
 export VFLP_JOB_STORAGE_MODE={{job_storage_mode}}
-export VFLP_WORKUNIT_SUBJOB=$SLURM_ARRAY_TASK_ID
-export VFLP_VCPUS=${SLURM_CPUS_PER_TASK}
-export VFLP_RUN_SEQUENTIAL=0
+export VFLP_TMP_PATH=/dev/shm
+export VFLP_CONFIG_JOB_TGZ={{job_tgz}}
+export VFLP_VCPUS={{threads_to_use}}
 
 ##################################################################################
 
 export VFLP_WORKFLOW_DIR=$(readlink --canonicalize ..)/workflow
-
 export VFLP_CONFIG_JSON=${VFLP_WORKFLOW_DIR}/config.json
 export VFLP_WORKUNIT_JSON=${VFLP_WORKFLOW_DIR}/workunits/${VFLP_WORKUNIT}.json.gz
+
+##################################################################################
 
 VFLP_PKG_BASE=$(readlink --canonicalize .)/packages
 VFLP_PKG_TMP_DIR=$(mktemp -d)
@@ -110,6 +84,12 @@ fi
 export CLASSPATH="${VFLP_PKG_TMP_DIR}/nailgun/nailgun-server/target/classes:${VFLP_PKG_TMP_DIR}/nailgun/nailgun-examples/target/classes:${VFLP_PKG_TMP_DIR}/jchemsuite/lib/*"
 export PATH="${VFLP_PKG_TMP_DIR}/java/bin:${VFLP_PKG_TMP_DIR}/nailgun/nailgun-client/target/:$PATH"
 
-#env
+##################################################################################
 
-./vflp_run.py
+for i in `seq 0 {{array_end}}`; do
+	export VFLP_WORKUNIT_SUBJOB=${i}
+	echo "Workunit ${VFLP_WORKUNIT}:${VFLP_WORKUNIT_SUBJOB}: stdout in {{batch_workunit_base}}/${VFLP_WORKUNIT_SUBJOB}.out, stderr in {{batch_workunit_base}}/${VFLP_WORKUNIT_SUBJOB}.err"
+	date +%s > {{batch_workunit_base}}/${VFLP_WORKUNIT_SUBJOB}.start
+	./vflp_run.py > {{batch_workunit_base}}/$$_${VFLP_WORKUNIT_SUBJOB}.out 2> {{batch_workunit_base}}/$$_${VFLP_WORKUNIT_SUBJOB}.err
+	date +%s > {{batch_workunit_base}}/${VFLP_WORKUNIT_SUBJOB}.end
+done

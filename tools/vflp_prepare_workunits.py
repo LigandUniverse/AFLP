@@ -184,12 +184,14 @@ def process(ctx):
 			total_lines += 1
 
 	print("Generating jobfiles....")
-    # Max array size depends on if we are using Batch or Slurm
+	# Max array size depends on if we are using Batch, Slurm or Bash
 
 	if(config['batchsystem'] == "awsbatch"):
 		max_array_job_size = int(config['aws_batch_array_job_size'])
 	elif(config['batchsystem'] == "slurm"):
 		max_array_job_size = int(config['slurm_array_job_size'])
+	elif (config['batchsystem'] == "bash"):
+		max_array_job_size = int(config['bash_array_job_size'])
 
 
 	with open('../workflow/todo.all') as fp:

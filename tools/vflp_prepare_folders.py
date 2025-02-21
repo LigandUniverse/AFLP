@@ -66,6 +66,7 @@ def parse_config(filename):
     config['tranche_types'] = config['tranche_types'].split(":")
     config['file_fieldnames'] = config['file_fieldnames'].split(":")
     config['attributes_to_generate'] = config['attributes_to_generate'].split(":")
+    config['posebusters_check_values'] = config['posebusters_check_values'].split(":")
 
 
 
@@ -188,6 +189,10 @@ def check_parameters(config):
                 error = 1
             if(empty_value(config, 'job_storage_mode') or config['job_storage_mode'] != "sharedfs"):
                 print("* 'job_storage_mode' must be set to 'sharedfs' batchsystem is 'slurm'")
+                error = 1
+        elif (config['batchsystem'] == "bash"):
+            if (empty_value(config, 'bash_template')):
+                print("* 'bash_template' must be set if batchsystem is 'bash'")
                 error = 1
         else:
             print(f"* batchsystem '{config['batchsystem']}' is not supported. Only awsbatch and slurm are supported")
