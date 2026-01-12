@@ -1,4 +1,4 @@
-package vf;
+package af;
 
 import chemaxon.marvin.calculations.*;
 import chemaxon.struc.*;

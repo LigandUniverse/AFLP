@@ -3,27 +3,27 @@
 # Copyright (C) 2019 Christoph Gorgulla
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-# This file is part of VirtualFlow.
+# This file is part of AdaptiveFlow.
 #
-# VirtualFlow is free software: you can redistribute it and/or modify
+# AdaptiveFlow is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# VirtualFlow is distributed in the hope that it will be useful,
+# AdaptiveFlow is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with VirtualFlow.  If not, see <https://www.gnu.org/licenses/>.
+# along with AdaptiveFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 # ---------------------------------------------------------------------------
 #
 # Description: Submit jobs to AWS Batch
 #
 # Revision history:
-# 2021-09-13  Initial version of VFLP ported to Python
+# 2021-09-13  Initial version of AFLP ported to Python
 #
 # ---------------------------------------------------------------------------
 
@@ -110,8 +110,8 @@ def run_bash(config, current_workunit, jobline):
 	ret.wait()
 
 	current_workunit['status'] = {
-		'vf_job_status': 'SUBMITTED',
-		'job_name': f"vflp-{config['job_letter']}-{jobline_str}",
+		'af_job_status': 'SUBMITTED',
+		'job_name': f"aflp-{config['job_letter']}-{jobline_str}",
 		'job_id': ret.pid
 	}
 
@@ -195,8 +195,8 @@ def submit_slurm(config, client, current_workunit, jobline):
 		raise Exception("sbatch did not return successfully")
 
 	current_workunit['status'] = {
-		'vf_job_status': 'SUBMITTED',
-		'job_name': f"vfvs-{config['job_letter']}-{jobline_str}",
+		'af_job_status': 'SUBMITTED',
+		'job_name': f"afvs-{config['job_letter']}-{jobline_str}",
 		'job_id': job_id
 	}
 
@@ -226,7 +226,7 @@ def submit_aws_batch(config, client, current_workunit, jobline):
 
 	try:
 		response = client.submit_job(
-			jobName=f'vflp-{config["job_letter"]}-{jobline}',
+			jobName=f'aflp-{config["job_letter"]}-{jobline}',
 			timeout={
 				'attemptDurationSeconds': 10800
 			},
@@ -248,39 +248,39 @@ def submit_aws_batch(config, client, current_workunit, jobline):
 				],
 				'environment': [
 					{
-						'name': 'VFLP_REGION',
+						'name': 'AFLP_REGION',
 						'value': config['aws_region']
 					},
 					{
-						'name': 'VFLP_RUN_MODE',
+						'name': 'AFLP_RUN_MODE',
 						'value': "awsbatch"
 					},
 					{
-						'name': 'VFLP_JOB_STORAGE_MODE',
+						'name': 'AFLP_JOB_STORAGE_MODE',
 						'value': "s3"
 					},
 					{
-						'name': 'VFLP_VCPUS',
+						'name': 'AFLP_VCPUS',
 						'value': config['threads_to_use']
 					},
 					{
-						'name': 'VFLP_TMP_PATH',
+						'name': 'AFLP_TMP_PATH',
 						'value': config['tempdir_default']
 					},
 					{
-						'name': 'VFLP_RUN_SEQUENTIAL',
+						'name': 'AFLP_RUN_SEQUENTIAL',
 						'value': "0"
 					},
 					{
-						'name': 'VFLP_WORKUNIT',
+						'name': 'AFLP_WORKUNIT',
 						'value': jobline_str
 					},
 					{
-						'name': 'VFLP_CONFIG_JOB_OBJECT',
+						'name': 'AFLP_CONFIG_JOB_OBJECT',
 						'value': current_workunit['s3_download_path']
 					},
 					{
-						'name': 'VFLP_CONFIG_JOB_BUCKET',
+						'name': 'AFLP_CONFIG_JOB_BUCKET',
 						'value': config['object_store_job_output_data_bucket']
 					},
 					
@@ -289,7 +289,7 @@ def submit_aws_batch(config, client, current_workunit, jobline):
 		)
 
 		current_workunit['status'] = {
-			'vf_job_status': 'SUBMITTED',
+			'af_job_status': 'SUBMITTED',
 			'job_arn': response['jobArn'],
 			'job_name': response['jobName'],
 			'job_id': response['jobId']
