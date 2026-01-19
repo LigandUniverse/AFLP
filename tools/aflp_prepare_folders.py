@@ -3,20 +3,20 @@
 # Copyright (C) 2019 Christoph Gorgulla
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-# This file is part of VirtualFlow.
+# This file is part of AdaptiveFlow.
 #
-# VirtualFlow is free software: you can redistribute it and/or modify
+# AdaptiveFlow is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# VirtualFlow is distributed in the hope that it will be useful,
+# AdaptiveFlow is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with VirtualFlow.  If not, see <https://www.gnu.org/licenses/>.
+# along with AdaptiveFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 # ---------------------------------------------------------------------------
 #
@@ -224,7 +224,7 @@ def main():
         print(
 '''
 Workflow already has a config.json. If you are sure that you want to delete
-the existing data, then re-run vflp_prepare_folders.py --overwrite
+the existing data, then re-run aflp_prepare_folders.py --overwrite
 '''
         )
         exit(1)
@@ -233,7 +233,7 @@ the existing data, then re-run vflp_prepare_folders.py --overwrite
         print(
 '''
 Workflow has validation errors. If you are sure it is correct,
-then re-run vfvs_prepare_folders.py --skip_errors (Not recommended!)
+then re-run afvs_prepare_folders.py --skip_errors (Not recommended!)
 '''
         )
         exit(1)

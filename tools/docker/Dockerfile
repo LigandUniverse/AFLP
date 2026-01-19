@@ -1,37 +1,37 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-# This file is part of VirtualFlow.
+# This file is part of AdaptiveFlow.
 #
-# VirtualFlow is free software: you can redistribute it and/or modify
+# AdaptiveFlow is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# VirtualFlow is distributed in the hope that it will be useful,
+# AdaptiveFlow is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with VirtualFlow.  If not, see <https://www.gnu.org/licenses/>.
+# along with AdaptiveFlow.  If not, see <https://www.gnu.org/licenses/>.
 
-FROM amazonlinux:2 as vflpbuild
+FROM amazonlinux:2 as aflpbuild
 RUN yum -y install java-11-amazon-corretto-headless
 
 ARG CX_LICENSE_FILE
 
-ADD templates /opt/vf/tools/templates
+ADD templates /opt/af/tools/templates
 
-ADD packages/jchemsuite.tar.gz /opt/vf/packages
-ADD packages/nailgun.tar.gz /opt/vf/packages
-ADD helper /opt/vf/helper
+ADD packages/jchemsuite.tar.gz /opt/af/packages
+ADD packages/nailgun.tar.gz /opt/af/packages
+ADD helper /opt/af/helper
 
-WORKDIR /opt/vf/helper/vf
-RUN javac -cp "/opt/vf/packages/jchemsuite/lib/*" CxCalcAttr.java
-WORKDIR /opt/vf/helper
-RUN jar cf CxCalcAttr.jar vf
+WORKDIR /opt/af/helper/af
+RUN javac -cp "/opt/af/packages/jchemsuite/lib/*" CxCalcAttr.java
+WORKDIR /opt/af/helper
+RUN jar cf CxCalcAttr.jar af
 
-COPY $CX_LICENSE_FILE /opt/vf/packages/chemaxon/license.cxl
+COPY $CX_LICENSE_FILE /opt/af/packages/chemaxon/license.cxl
 
 
 
@@ -41,15 +41,15 @@ RUN amazon-linux-extras install epel -y
 RUN yum update -y && yum -y install python3 openbabel java-11-amazon-corretto-headless which iproute
 RUN pip3 install boto3 rdkit selfies
 
-COPY --from=vflpbuild /opt/vf /opt/vf
-ADD *.py *.sh /opt/vf/tools/
-RUN chmod +x -R /opt/vf/tools/*.sh \
-        /opt/vf/tools/*.py  \
-        /opt/vf/tools/templates/*.sh \
-        /opt/vf/packages/nailgun/nailgun-client/target/ng
+COPY --from=aflpbuild /opt/af /opt/af
+ADD *.py *.sh /opt/af/tools/
+RUN chmod +x -R /opt/af/tools/*.sh \
+        /opt/af/tools/*.py  \
+        /opt/af/tools/templates/*.sh \
+        /opt/af/packages/nailgun/nailgun-client/target/ng
 
 ENV USER ec2-user
 
 WORKDIR /
 
-ENTRYPOINT ["/opt/vf/tools/templates/template1.awsbatch.sh"]
+ENTRYPOINT ["/opt/af/tools/templates/template1.awsbatch.sh"]

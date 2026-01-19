@@ -1,4 +1,4 @@
-## How to contribute to VirtualFlow
+## How to contribute to AdaptiveFlow
 
 #### Table of Contents
 
@@ -23,11 +23,11 @@
 
 ### Introduction
 
-Thank you for considering to contribute to VirtualFlow. It's people like you that will help VirtualFlow to grow further and to become an even greater drug discovery platform. 
+Thank you for considering to contribute to AdaptiveFlow. It's people like you that will help AdaptiveFlow to grow further and to become an even greater drug discovery platform. 
 
 Following the contributing guidelines will help to run this open source project smoothly and efficiently.
 
-VirtuaFlow is an open source project and we love to receive contributions from our community — you! There are many ways to contribute, from writing tutorials, blog posts, improving the documentation, requesting features, submitting bug reports, and writing code for VirtualFlow itself. See [further below](#types-of-contributions) for more details about the varios types of contributions.
+AdaptiveFlow is an open source project and we love to receive contributions from our community — you! There are many ways to contribute, from writing tutorials, blog posts, improving the documentation, requesting features, submitting bug reports, and writing code for AdaptiveFlow itself. See [further below](#types-of-contributions) for more details about the varios types of contributions.
 
 
 ### Code of Conduct
@@ -37,14 +37,14 @@ We aspire to create a welcoming environment for collaboration on this project. T
 
 ### Resources
 
-The following gives an overview of the various resources related to VirtualFlow:
+The following gives an overview of the various resources related to AdaptiveFlow:
 
-- [Homepage of VirtualFlow](https://virtual-flow.org/)
-- [The documentation of VirtualFlow](https://docs.virtual-flow.org/documentation/-LdE8RH9UN4HKpckqkX3/)
-- [Tutorials for VirtualFlow](https://virtual-flow.org/tutorials)
-- [Feature Requests (powered by Canny)](http://feedback.virtual-flow.org/feature-requests)
-- [GitHub Issue Tracker for VFVS](https://github.com/VirtualFlow/VFVS/issues)
-- [GitHub Issue Tracker for VFLP](https://github.com/VirtualFlow/VFLP/issues)
+- [Homepage of AdaptiveFlow](https://adaptive-flow.ai/)
+- [The documentation of AdaptiveFlow](https://docs.virtual-flow.org/documentation-vf2)
+- [Tutorials for AdaptiveFlow](https://virtual-flow.org/tutorials)
+- [Feature Requests (powered by Canny)](https://feedback.virtual-flow.org/feature-requests)
+- [GitHub Issue Tracker for AFVS](https://github.com/LigandUniverse/AFVS/issues)
+- [GitHub Issue Tracker for AFLP](https://github.com/LigandUniverse/AFLP/issues)
 - In-code documentation of the source code files
 
 
@@ -52,14 +52,14 @@ The following gives an overview of the various resources related to VirtualFlow:
 
 #### Features Requests
 
-New features can be requested [here](http://feedback.virtual-flow.org/feature-requests), which is powered by Canny.
+New features can be requested [here](https://feedback.virtual-flow.org/feature-requests), which is powered by Canny.
 
 
 #### Bug Reports
 
 Bug reports can be done via our GitHub issue tracker:
-- [GitHub Issue Tracker for VFVS](https://github.com/VirtualFlow/VFVS/issues)
-- [GitHub Issue Tracker for VFLP](https://github.com/VirtualFlow/VFLP/issues)
+- [GitHub Issue Tracker for AFVS](https://github.com/LigandUniverse/AFVS/issues)
+- [GitHub Issue Tracker for AFLP](https://github.com/LigandUniverse/AFLP/issues)
 
 
 #### Improving/Extending the Documentation

@@ -3,20 +3,20 @@
 # Copyright (C) 2019 Christoph Gorgulla
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-# This file is part of VirtualFlow.
+# This file is part of AdaptiveFlow.
 #
-# VirtualFlow is free software: you can redistribute it and/or modify
+# AdaptiveFlow is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# VirtualFlow is distributed in the hope that it will be useful,
+# AdaptiveFlow is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with VirtualFlow.  If not, see <https://www.gnu.org/licenses/>.
+# along with AdaptiveFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 # ---------------------------------------------------------------------------
 #
@@ -24,7 +24,7 @@
 #              for ligand preparation
 #
 # Revision history:
-# 2021-09-13  Initial version of VFLP ported to Python
+# 2021-09-13  Initial version of AFLP ported to Python
 #
 # ---------------------------------------------------------------------------
 
@@ -1481,7 +1481,7 @@ def run_cxcalc_attributes(tautomer, local_file, nailgun_port, nailgun_host, attr
 				cxcalc_attrs.append(attributes[attr]['prog_name'])
 
 		local_args = [
-			"vf.CxCalcAttr",
+			"af.CxCalcAttr",
 			local_file,
 			*cxcalc_attrs
 		]
@@ -2811,11 +2811,11 @@ def cleanup_ng(ng_process):
 
 def get_workunit_information():
 
-	workunit_id = os.getenv('VFLP_WORKUNIT','')
-	subjob_id = os.getenv('VFLP_WORKUNIT_SUBJOB','')
+	workunit_id = os.getenv('AFLP_WORKUNIT','')
+	subjob_id = os.getenv('AFLP_WORKUNIT_SUBJOB','')
 
 	if(workunit_id == "" or subjob_id == ""):
-		raise RuntimeError(f"Invalid VFLP_WORKUNIT and/or VFLP_WORKUNIT_SUBJOB")
+		raise RuntimeError(f"Invalid AFLP_WORKUNIT and/or AFLP_WORKUNIT_SUBJOB")
 
 	return workunit_id, subjob_id
 
@@ -2823,12 +2823,12 @@ def get_workunit_information():
 def get_subjob_config(ctx, workunit_id, subjob_id):
 
 
-	ctx['job_storage_mode'] = os.getenv('VFLP_JOB_STORAGE_MODE', 'INVALID')
+	ctx['job_storage_mode'] = os.getenv('AFLP_JOB_STORAGE_MODE', 'INVALID')
 
 	if(ctx['job_storage_mode'] == "s3"):
 		# Get the initial bootstrap information
-		job_object = os.getenv('VFLP_CONFIG_JOB_OBJECT')
-		job_bucket = os.getenv('VFLP_CONFIG_JOB_BUCKET')
+		job_object = os.getenv('AFLP_CONFIG_JOB_OBJECT')
+		job_bucket = os.getenv('AFLP_CONFIG_JOB_BUCKET')
 		download_to_workunit_file = f"{ctx['temp_dir'].name}/{workunit_id}.json.gz"
 
 		# Download workunit from S3
@@ -2860,11 +2860,11 @@ def get_subjob_config(ctx, workunit_id, subjob_id):
 
 	elif(ctx['job_storage_mode'] == "sharedfs"):
 
-		config_json = os.getenv('VFLP_CONFIG_JSON', "")
-		workunit_json = os.getenv('VFLP_WORKUNIT_JSON', "")
+		config_json = os.getenv('AFLP_CONFIG_JSON', "")
+		workunit_json = os.getenv('AFLP_WORKUNIT_JSON', "")
 
 		if(config_json == "" or workunit_json == ""):
-			print("For VFLP_JOB_STORAGE_MODE=sharedfs, VFLP_CONFIG_JSON, VFLP_WORKUNIT_JSON must be set")
+			print("For AFLP_JOB_STORAGE_MODE=sharedfs, AFLP_CONFIG_JSON, AFLP_WORKUNIT_JSON must be set")
 			exit(1)
 
 		# load in the main config from the ENV
@@ -2895,7 +2895,7 @@ def get_subjob_config(ctx, workunit_id, subjob_id):
 		ctx['collection_dir'] = ctx['main_config']['sharedfs_collection_path']
 
 	else:
-		raise RuntimeError(f"Invalid jobstoragemode of {ctx['job_storage_mode']}. VFLP_JOB_STORAGE_MODE must be 's3' or 'sharedfs' ")
+		raise RuntimeError(f"Invalid jobstoragemode of {ctx['job_storage_mode']}. AFLP_JOB_STORAGE_MODE must be 's3' or 'sharedfs' ")
 
 
 
@@ -2917,8 +2917,8 @@ def process(ctx):
 
 	# Figure out what job we are running
 
-	ctx['vcpus_to_use'] = int(os.getenv('VFLP_VCPUS', 1))
-	ctx['run_sequential'] = int(os.getenv('VFLP_RUN_SEQUENTIAL', 0))
+	ctx['vcpus_to_use'] = int(os.getenv('AFLP_VCPUS', 1))
+	ctx['run_sequential'] = int(os.getenv('AFLP_RUN_SEQUENTIAL', 0))
 
 	workunit_id, subjob_id =  get_workunit_information()
 
@@ -2932,7 +2932,7 @@ def process(ctx):
 
 	if(is_nailgun_needed(ctx)):
 		ng_port = get_free_port()
-		ng_host = os.getenv('VFLP_HOST', 'localhost')
+		ng_host = os.getenv('AFLP_HOST', 'localhost')
 		ng_process = start_ng_server(ng_host, ng_port, ctx['main_config']['java_max_heap_size'])
 		ctx['main_config']['nailgun_port'] = str(ng_port)
 		ctx['main_config']['nailgun_host'] = str(ng_host)
@@ -3293,7 +3293,7 @@ def main():
 	else:
 		print("could not run df -h")
 
-	aws_region = os.getenv('VFLP_REGION', "us-east-1")
+	aws_region = os.getenv('AFLP_REGION', "us-east-1")
 
 	botoconfig = Config(
 	   region_name = aws_region,
@@ -3306,7 +3306,7 @@ def main():
 	# Get the config information
 	ctx['s3'] = boto3.client('s3', config=botoconfig)
 
-	tmp_path = os.getenv('VFLP_TMP_PATH', "/tmp")
+	tmp_path = os.getenv('AFLP_TMP_PATH', "/tmp")
 	tmp_path = os.path.join(tmp_path, '')
 
 	ctx['temp_path'] = tmp_path

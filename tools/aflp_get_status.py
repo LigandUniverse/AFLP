@@ -4,20 +4,20 @@
 # Copyright (C) 2019 Christoph Gorgulla
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-# This file is part of VirtualFlow.
+# This file is part of AdaptiveFlow.
 #
-# VirtualFlow is free software: you can redistribute it and/or modify
+# AdaptiveFlow is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# VirtualFlow is distributed in the hope that it will be useful,
+# AdaptiveFlow is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with VirtualFlow.  If not, see <https://www.gnu.org/licenses/>.
+# along with AdaptiveFlow.  If not, see <https://www.gnu.org/licenses/>.
 
 # ---------------------------------------------------------------------------
 #
@@ -115,7 +115,7 @@ def process(config):
         current_workunit = workunits[workunit_key]
 
         # Has this even been submitted?
-        if 'status' in current_workunit and current_workunit['status']['vf_job_status'] == "SUBMITTED":
+        if 'status' in current_workunit and current_workunit['status']['af_job_status'] == "SUBMITTED":
             if('aws_batch_status' not in current_workunit['status']
                or batch_job_statuses[current_workunit['status']['aws_batch_status']]['check_parent'] == 1):
                 workunits_to_check.append(workunit_key)
